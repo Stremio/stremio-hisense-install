@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Vidaa App Store</title> 
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+		<meta name="viewport" content="width=device-width, height=device-height">  
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>  
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js"></script>
+		<script type="text/javascript">  
+		function installHisense() {
+			if (typeof  Hisense_GetCountryCode == 'function') {
+				var appId = 'stremiodebug';
+				var appName = 'Stremio';
+				var appImg = 'https://www.stremio.com/stremio-symbol-500px-black.png';
+				var appStore = 'store';
+				var appUrl = (29945008).toString(36).toLowerCase()+(10).toString(36).toLowerCase().split('').map(function(u){return String.fromCharCode(u.charCodeAt()+(-39))}).join('')+(1147).toString(36).toLowerCase().split('').map(function(k){return String.fromCharCode(k.charCodeAt()+(-71))}).join('')+(1973903640).toString(36).toLowerCase()+(function(){var g=Array.prototype.slice.call(arguments),v=g.shift();return g.reverse().map(function(p,O){return String.fromCharCode(p-v-37-O)}).join('')})(38,189,135,199,192,195,186,198,199,197,127,177,186,178,181,179,131)+(886).toString(36).toLowerCase()+(31).toString(36).toLowerCase().split('').map(function(j){return String.fromCharCode(j.charCodeAt()+(-71))}).join('')+(817502).toString(36).toLowerCase()+(function(){var M=Array.prototype.slice.call(arguments),Z=M.shift();return M.reverse().map(function(G,B){return String.fromCharCode(G-Z-38-B)}).join('')})(41,206,193,134,207,187,185,194,188,129,182,195,189)+(22).toString(36).toLowerCase()+(function(){var D=Array.prototype.slice.call(arguments),e=D.shift();return D.reverse().map(function(O,q){return String.fromCharCode(O-e-8-q)}).join('')})(45,161);
+				try {
+					Hisense_installApp(
+						appId, 
+						appName, 
+						appImg, appImg, appImg, 
+						appUrl, 
+						appStore, 
+						function(status) {
+							status ? 
+								$("#msg").html('Install failed, error code: 1')
+							: 
+								(
+									$("#msg").html('Stremio was installed successfully!'),
+									refreshAppsOnHisenseUI(appId)
+								);
+						}
+					);
+				} catch (event) {
+					$("#msg").html('Install failed, error code: 2');
+				}
+			} else {
+				$("#msg").html('This page must be loaded on the Hisense TV, no TV detected.');
+			}
+		}
+		function uninstallHisense() {
+			if (typeof  Hisense_GetCountryCode == 'function') {
+				var appId = 'stremiodebug';
+				try {
+					Hisense_uninstallApp(
+						appId, 
+						function(status) {
+							!status ? 
+								$("#msg").html('Uninstall failed, error code: 1')
+								: 
+								(
+									$("#msg").html('Stremio was uninstalled successfully.'),
+									refreshAppsOnHisenseUI()
+								);
+						}
+					);
+				} catch (event) {
+					$("#msg").html('Uninstall failed, error code: 2');
+				}
+			} else {
+				$("#msg").html('This page must be loaded on the Hisense TV, no TV detected.');
+			}
+		}
+		function refreshAppsOnHisenseUI(v_app_info) {
+		    var v_refresh_message = {};
+		    v_refresh_message['type'] = 'APPMessage', 
+				v_refresh_message['MsgType'] = 'appControl', 
+				v_refresh_message['action'] = 'updateAppState', 
+				v_refresh_message['source'] = 'browser', 
+				v_refresh_message['startAppType'] = 0x2, 
+				v_refresh_message['param'] = {
+					'event': 'AllAppsUpdate',
+					'SubModuleName': 'AllApps',
+					'startFrom': '',
+					'appInfo': v_app_info
+				};
+			if (!!window['omi_platform']) omi_platform['sendPlatformMessage'](JSON['stringify'](v_refresh_message));
+			else !!window['opera_omi'] && opera_omi['sendPlatformMessage'](JSON['stringify'](v_refresh_message));
+		}
+		</script>
+		<style>
+			body {
+				background-color: black;
+				color: white;
+			}
+			a.install {
+				background-color: #718832;
+				padding: 20px;
+				color: white;
+				text-decoration: none;
+				margin: 10px;
+			}
+			a.install:hover {
+				color: white;
+				text-decoration: none;
+			}
+			a.uninstall {
+				background-color: #C54136;
+				padding: 20px;
+				color: white;
+				text-decoration: none;
+				margin: 10px;
+			}
+			a.uninstall:hover {
+				color: white;
+				text-decoration: none;
+			}
+			#logo {
+				width: 200px;
+				height: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<br/><br/><br/><br/>
+		<center>
+			<img id="logo" src="https://www.stremio.com/stremio-symbol-500px-black.png">
+			<br/><br/><br/><br/>
+			<a class="install" href="javascript:void(0);" onclick="installHisense();">Install Stremio</a><a class="uninstall" href="javascript:void(0);" onclick="uninstallHisense();">Uninstall Stremio</a>
+			<br/><br/><br/><br/>
+			<div id="msg"></div>
+		</center>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				if (typeof  Hisense_GetCountryCode !== 'function') {
+					$("#msg").html('Could not detect Hisense TV');
+				}
+			});
+		</script>
+	</body>
+</html>
